@@ -1,33 +1,58 @@
-// Nom du cache. Changer la version si vous modifiez des fichiers statiques.
-const CACHE_NAME = 'labos-calendar-v2';
-const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  'images/icon-192x192.png',
-  'images/icon-512x512.png'
+// Augmente la version pour forcer le refresh
+const CACHE_NAME = "labos-calendar-v3";
+
+// Tout ce qui est stocké statiquement
+const STATIC_ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "images/icon-192x192.png",
+  "images/icon-512x512.png"
 ];
 
-self.addEventListener('install', event => {
+// INSTALL — met en cache les fichiers nécessaires
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(STATIC_ASSETS);
+    })
   );
+  self.skipWaiting(); // active immédiatement la nouvelle version
 });
 
-self.addEventListener('fetch', event => {
+// ACTIVATE — supprime les vieux caches
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.filter(key => key !== CACHE_NAME)
+            .map(key => caches.delete(key))
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+// FETCH — stratégie "network first, fallback cache"
+self.addEventListener("fetch", event => {
+
+  // On ignore les requêtes chrome-extension etc.
+  if (!event.request.url.startsWith("http")) return;
+
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
+    fetch(event.request)
+      .then(networkResponse => {
+        // Si la ressource peut être mise en cache → on la met à jour
+        if (networkResponse.ok) {
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, networkResponse.clone());
+          });
         }
-        return fetch(event.request);
-      }
-    )
+        return networkResponse.clone();
+      })
+      .catch(() => {
+        // Offline → fallback cache
+        return caches.match(event.request);
+      })
   );
 });
