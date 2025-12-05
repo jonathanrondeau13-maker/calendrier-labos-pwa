@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier Labos</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        body, html, iframe {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            border: none; /* Enlève la bordure autour de l'iframe */
+            overflow: hidden; /* Empêche les doubles barres de défilement */
+        }
+    </style>
+</head>
+<body>
+
+    <iframe id="gas-app" src="https://script.google.com/macros/s/AKfycbzl3SQlynKJlGYfNGqhTY7CXmd_xjqiSlhu4eYo13IUizn0VjIceo8NKY9Bc6KpS6EA/exec"></iframe>
+
+    <script>
+        // Enregistrement du Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    // L'enregistrement a réussi
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    // L'enregistrement a échoué
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+
+</body>
+</html>
