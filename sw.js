@@ -1,5 +1,5 @@
 // Nom du cache. Changer la version si vous modifiez des fichiers statiques.
-const CACHE_NAME = 'labos-calendar-v1';
+const CACHE_NAME = 'labos-calendar-v2';
 const urlsToCache = [
   './',
   './index.html',
