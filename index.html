@@ -2,38 +2,50 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+    <!-- Viewport obligatoire pour PWA + Apps Script -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
     <title>Calendrier Labos</title>
+
     <link rel="manifest" href="manifest.json">
+
     <style>
-        body, html {
+        body {
             margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #031E45;
-            /* On enlève overflow: hidden pour laisser le navigateur gérer */
+            background: #031E45;
+            font-family: sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
         }
-        
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
         }
     </style>
 </head>
 <body>
-    <iframe id="gas-app" 
-            src="https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec">
-    </iframe>
 
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js');
-            });
-        }
-    </script>
+<div class="loading">
+    Chargement…
+</div>
+
+<script>
+    // URL de ta WebApp GAS
+    const webappUrl = "https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec";
+
+    // Redirection immédiate
+    window.location.replace(webappUrl);
+
+    // Service worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+    }
+</script>
+
 </body>
 </html>
