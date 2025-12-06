@@ -2,12 +2,20 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+
+    <!-- IMPORTANT : laisse user-scalable=yes pour éviter l’effet zoom-loupe -->
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+          content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
     <title>Calendrier des Laboratoires</title>
 
+    <!-- Ton manifest existant -->
     <link rel="manifest" href="manifest.json">
+
+    <!-- Splash screen iOS minimal -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="images/icon-192x192.png">
 
     <style>
         body {
@@ -20,8 +28,8 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-family: 'Segoe UI', sans-serif;
             text-align: center;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         img.logo {
@@ -40,26 +48,33 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
         }
 
         .txt {
-            font-size: 1.1em;
-            opacity: 0.9;
+            font-size: 1.15em;
+            opacity: 0.95;
         }
     </style>
 </head>
+
 <body>
 
-    <img src="logo_college.png" class="logo" alt="Collège de Champigny">
+    <!-- Ton logo -->
+    <img src="images/icon-192x192.png" class="logo" alt="Logo Collège">
+
     <div class="loader"></div>
-    <div class="txt">Chargement de l’application…</div>
+    <div class="txt">Chargement…</div>
 
     <script>
-        const webappUrl = "https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec";
+        // URL de ta WebApp Apps Script
+        const webappUrl =
+          "https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec";
 
-        // Petite pause pour rendre la PWA “installable”
+        // IMPORTANT :
+        // Attendre un petit délai pour que Chrome détecte une "page réelle"
+        // → sinon, la PWA n’est pas installable
         setTimeout(() => {
             window.location.href = webappUrl;
         }, 350);
