@@ -1,5 +1,5 @@
 // Augmente la version pour forcer le refresh
-const CACHE_NAME = "labos-calendar-v4";
+const CACHE_NAME = "labos-calendar-v5";
 
 // Tout ce qui est stocké statiquement
 const STATIC_ASSETS = [
