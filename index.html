@@ -1,89 +1,63 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <!-- IMPORTANT : laisse user-scalable=yes pour éviter l’effet zoom-loupe -->
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Calendrier Labos</title>
 
-    <title>Calendrier des Laboratoires</title>
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#283C66" />
 
-    <!-- Ton manifest existant -->
-    <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #031E45;
+      overflow: hidden;
+    }
 
-    <!-- Splash screen iOS minimal -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="apple-touch-icon" href="images/icon-192x192.png">
+    #frame-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #031E45;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        img.logo {
-            width: 140px;
-            margin-bottom: 20px;
-        }
-
-        .loader {
-            border: 6px solid rgba(255,255,255,0.2);
-            border-top: 6px solid #FBDF4B;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-        }
-
-        .txt {
-            font-size: 1.15em;
-            opacity: 0.95;
-        }
-    </style>
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      touch-action: manipulation;
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- Ton logo -->
-    <img src="images/icon-192x192.png" class="logo" alt="Logo Collège">
+  <div id="frame-container">
+    <iframe
+      src="https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec"
+      id="gas-app">
+    </iframe>
+  </div>
 
-    <div class="loader"></div>
-    <div class="txt">Chargement…</div>
-
-    <script>
-        // URL de ta WebApp Apps Script
-        const webappUrl =
-          "https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec";
-
-        // IMPORTANT :
-        // Attendre un petit délai pour que Chrome détecte une "page réelle"
-        // → sinon, la PWA n’est pas installable
-        setTimeout(() => {
-            window.location.href = webappUrl;
-        }, 350);
-
-        // Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
 
 </body>
 </html>
+
