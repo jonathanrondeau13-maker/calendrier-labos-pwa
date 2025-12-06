@@ -6,16 +6,15 @@
     <title>Calendrier Labos</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* On retire les restrictions "overflow: hidden" qui bloquent le scroll */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             background-color: #031E45;
+            /* On enlève overflow: hidden pour laisser le navigateur gérer */
         }
         
-        /* L'iframe doit simplement remplir l'espace, sans transformations bizarres */
         iframe {
             width: 100%;
             height: 100%;
