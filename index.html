@@ -2,58 +2,69 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendrier Labos</title>
+
+    <!-- Viewport mobile réaliste : évite les zooms et les clics décalés -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <!-- PWA Android / Chrome -->
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <title>Calendrier des Laboratoires</title>
+
     <link rel="manifest" href="manifest.json">
+
     <style>
-        body, html {
+        /* Le conteneur PWA DOIT être fixe pour éviter que la webview modifie le scale */
+        html, body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            /* Supprimez overflow: auto ici pour éviter les conflits */
-            -webkit-overflow-scrolling: touch; 
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* Important : le scroll sera dans l’iframe */
+            background: #031E45;
         }
-        iframe {
+
+        /* L’iframe prend TOUT l’écran, sans changer d’échelle */
+        iframe#gas-app {
+            border: none;
+            width: 100vw;
+            height: 100vh;
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            /* ASSUREZ-VOUS QUE C'EST BIEN 'auto' ou 'scroll' */
-            overflow: auto; 
+
+            /* Empêche Chrome WebView de faire un zoom interne */
+            transform: none !important;
+
+            /* Active le vrai scroll interne (pour ton vendredi complet) */
+            overflow: auto;
             -webkit-overflow-scrolling: touch;
-            touch-action: auto; 
-            pointer-events: auto;
+
+            /* Important pour éviter les clics décalés */
+            position: relative;
+            touch-action: manipulation;
         }
     </style>
 </head>
 <body>
+
+    <!-- IFRAME vers ta WebApp GAS -->
     <iframe id="gas-app"
-  src="https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec"
-  scrolling="yes"
-  allowfullscreen>
-</iframe>
+        src="https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec"
+        allow="fullscreen">
+    </iframe>
+
     <script>
-
+        // Installation du Service Worker (mise à jour automatique)
         if ('serviceWorker' in navigator) {
-
-            window.addEventListener('load', function() {
-
-                navigator.serviceWorker.register('sw.js').then(function(registration) {
-
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-
-                }, function(err) {
-
-                    console.log('ServiceWorker registration failed: ', err);
-
-                });
-
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log("SW installé, scope :", reg.scope))
+                    .catch(err => console.error("Erreur SW:", err));
             });
-
         }
+    </script>
 
-    </script> 
 </body>
 </html>
+
