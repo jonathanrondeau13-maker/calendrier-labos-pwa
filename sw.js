@@ -1,58 +1,29 @@
-// Augmente la version pour forcer le refresh
-const CACHE_NAME = "labos-calendar-v5";
+// Version auto-bump pour FORCER un reset total du cache
+const CACHE_NAME = 'labos-calendar-v4-' + Date.now();
 
-// Tout ce qui est stocké statiquement
-const STATIC_ASSETS = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "images/icon-192x192.png",
-  "images/icon-512x512.png"
-];
-
-// INSTALL — met en cache les fichiers nécessaires
+// Aucun pré-cache → tout sera chargé directement depuis le réseau
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(STATIC_ASSETS);
-    })
-  );
-  self.skipWaiting(); // active immédiatement la nouvelle version
+  console.log("SW install — skipWaiting");
+  self.skipWaiting();
 });
 
-// ACTIVATE — supprime les vieux caches
+// ACTIVATE — efface TOUS les anciens caches
 self.addEventListener("activate", event => {
+  console.log("SW activate — clearing old caches");
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
-            .map(key => caches.delete(key))
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(keys.map(key => caches.delete(key)))
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// FETCH — stratégie "network first, fallback cache"
+// FETCH — passe TOUT au réseau (0% cache)
+// bute complètement le cache pour éviter affichage/clic décalé
 self.addEventListener("fetch", event => {
-
-  // On ignore les requêtes chrome-extension etc.
   if (!event.request.url.startsWith("http")) return;
 
-  event.respondWith(
-    fetch(event.request)
-      .then(networkResponse => {
-        // Si la ressource peut être mise en cache → on la met à jour
-        if (networkResponse.ok) {
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, networkResponse.clone());
-          });
-        }
-        return networkResponse.clone();
-      })
-      .catch(() => {
-        // Offline → fallback cache
-        return caches.match(event.request);
-      })
-  );
+  event.respondWith(fetch(event.request).catch(() => {
+    // fallback uniquement si nécessaire, mais normalement jamais utilisé
+    return new Response("Offline", { status: 503 });
+  }));
 });
