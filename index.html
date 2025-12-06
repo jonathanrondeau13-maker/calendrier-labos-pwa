@@ -2,50 +2,73 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-
-    <!-- Viewport obligatoire pour PWA + Apps Script -->
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-    <title>Calendrier Labos</title>
+    <title>Calendrier des Laboratoires</title>
 
     <link rel="manifest" href="manifest.json">
 
     <style>
         body {
             margin: 0;
+            padding: 0;
             background: #031E45;
-            font-family: sans-serif;
             height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             color: white;
-        }
-        .loading {
+            font-family: 'Segoe UI', sans-serif;
             text-align: center;
-            font-size: 1.2em;
+        }
+
+        img.logo {
+            width: 140px;
+            margin-bottom: 20px;
+        }
+
+        .loader {
+            border: 6px solid rgba(255,255,255,0.2);
+            border-top: 6px solid #FBDF4B;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .txt {
+            font-size: 1.1em;
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
 
-<div class="loading">
-    Chargement…
-</div>
+    <img src="logo_college.png" class="logo" alt="Collège de Champigny">
+    <div class="loader"></div>
+    <div class="txt">Chargement de l’application…</div>
 
-<script>
-    // URL de ta WebApp GAS
-    const webappUrl = "https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec";
+    <script>
+        const webappUrl = "https://script.google.com/macros/s/AKfycby7RLD-KuD63gHHG-ubnTECMODBeF7W4zkYuWQIVVXjCyY_VzlzStBC3ltVJsdVt1S0/exec";
 
-    // Redirection immédiate
-    window.location.replace(webappUrl);
+        // Petite pause pour rendre la PWA “installable”
+        setTimeout(() => {
+            window.location.href = webappUrl;
+        }, 350);
 
-    // Service worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
-    }
-</script>
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 
 </body>
 </html>
