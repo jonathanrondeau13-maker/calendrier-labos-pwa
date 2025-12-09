@@ -21,8 +21,11 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js');
     }
-    window.location.href = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
+    
+    // Court délai pour permettre l'enregistrement de la PWA
+    setTimeout(() => {
+      window.location.href = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
+    }, 100);
   </script>
 </body>
 </html>
-
