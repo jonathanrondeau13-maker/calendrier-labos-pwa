@@ -10,22 +10,99 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="images/icon-192x192.png">
   <style>
-    body {
+    * {
       margin: 0;
-      background: #031E45;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(135deg, #031E45 0%, #0a2d5c 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .logo {
+      width: 180px;
+      height: auto;
+      margin-bottom: 30px;
+      filter: drop-shadow(0 4px 20px rgba(251, 223, 75, 0.3));
+    }
+    .title {
+      color: #FBDF4B;
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .subtitle {
+      color: #CCEBFC;
+      font-size: 0.9em;
+      margin-bottom: 40px;
+      opacity: 0.9;
+    }
+    .install-hint {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.75em;
+      text-align: center;
+      max-width: 280px;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+    .loader {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: #FBDF4B;
+      border-radius: 50%;
+      animation: bounce 1.4s ease-in-out infinite;
+    }
+    .dot:nth-child(1) { animation-delay: 0s; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
     }
   </style>
 </head>
 <body>
+  <img src="images/Champigny_Logo_horizontal_BLANC.png" alt="Logo" class="logo">
+  <h1 class="title">🧪 Calendrier des Laboratoires</h1>
+  <p class="subtitle">Collège de Champigny</p>
+  <p class="install-hint" id="hint"></p>
+  <div class="loader">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js');
     }
     
-    // Court délai pour permettre l'enregistrement de la PWA
-    setTimeout(() => {
+    // Détecter si déjà installé comme PWA
+    const isInstalled = window.matchMedia('(display-mode: standalone)').matches 
+                     || window.navigator.standalone === true;
+    
+    if (isInstalled) {
+      // Déjà installé → redirection rapide
       window.location.href = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
-    }, 500);
+    } else {
+      // Pas installé → montrer hint et attendre un peu
+      document.getElementById('hint').textContent = "💡 Installez l'app : Menu ⋮ → Installer l'application";
+      
+      setTimeout(() => {
+        window.location.href = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
+      }, 3000);
+    }
   </script>
 </body>
 </html>
