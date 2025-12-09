@@ -151,26 +151,55 @@
   </iframe>
 
   <script>
-    // Enregistrer le Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js');
+  // Enregistrer le Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+
+  const frame = document.getElementById("calendarFrame");
+  const splash = document.getElementById("splash");
+
+  let gasReady = false;
+
+  // 1️⃣ PING SERVEUR GAS POUR LE RÉVEILLER EN ARRIÈRE-PLAN
+  // Mode no-cors parce que Apps Script ne permet pas autrement
+  fetch("https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec?warmup=1", {
+    mode: "no-cors",
+    cache: "no-store"
+  }).then(() => {
+    gasReady = true;
+  });
+
+  // 2️⃣ VÉRIFIER TOUTES LES 200 ms SI GAS EST RÉVEILLÉ
+  const checkInterval = setInterval(() => {
+    if (gasReady) {
+
+      clearInterval(checkInterval);
+
+      // Lancer l’iframe UNIQUEMENT lorsque GAS est réveillé
+      frame.src = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
+
+      // Quand l’iframe est chargée → transition propre
+      frame.onload = () => {
+        splash.style.opacity = "0";
+        splash.style.transition = "opacity 0.6s ease-out";
+
+        setTimeout(() => {
+          splash.style.display = "none";
+          frame.style.display = "block";
+        }, 600);
+      };
     }
+  }, 200);
 
-    // Quand l'iframe (calendrier) est complètement chargée
-    const frame = document.getElementById("calendarFrame");
-    const splash = document.getElementById("splash");
+  // 3️⃣ SÉCURITÉ : SI GAS N’EST PAS RÉVEILLÉ APRÈS 5 SECONDES, ON CHARGE L’IFRAME QUAND MÊME
+  setTimeout(() => {
+    if (!gasReady) {
+      frame.src = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
+    }
+  }, 5000);
+</script>
 
-    frame.onload = () => {
-      // Petite transition douce
-      splash.style.opacity = "0";
-      splash.style.transition = "opacity 0.6s ease-out";
-
-      setTimeout(() => {
-        splash.style.display = "none";   // supprimer le splash
-        frame.style.display = "block";   // afficher le calendrier
-      }, 600);
-    };
-  </script>
 
 </body>
 </html>
