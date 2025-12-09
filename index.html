@@ -131,40 +131,42 @@
   <div class="college-badge">Année scolaire 2025-2026</div>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js');
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
+
+  let gasReady = false;
+
+  // 1️⃣ Pré-réveil fiable via image invisible
+  const img = new Image();
+  img.src = GAS_URL + "?warmup=" + Date.now();
+  img.onload = () => { gasReady = true; };
+  img.onerror = () => { gasReady = true; }; // Google renverra *une erreur normale* → mais GAS sera réveillé
+
+  // 2️⃣ Timer splash (ajustable)
+  const SPLASH_TIME = 2000;
+
+  // 3️⃣ Redirection après splash OU dès que GAS est réveillé
+  setTimeout(() => {
+    window.location.href = GAS_URL;
+  }, SPLASH_TIME);
+
+  // 4️⃣ Si GAS est prêt plus vite → on part tout de suite
+  const interval = setInterval(() => {
+    if (gasReady) {
+      clearInterval(interval);
+      window.location.href = GAS_URL;
     }
+  }, 100);
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
+  // 5️⃣ Sécurité ultime : max 8 sec
+  setTimeout(() => {
+    window.location.href = GAS_URL;
+  }, 8000);
+</script>
 
-    let gasReady = false;
-
-    // 1️⃣ Réveiller Apps Script pendant que ton splash s’affiche
-    fetch(GAS_URL + "?wake=1", {
-      mode: "no-cors",
-      cache: "no-store"
-    }).then(() => {
-      gasReady = true;
-    });
-
-    // 2️⃣ Splash fixe (1500–2500 ms)
-    setTimeout(() => {
-      window.location.href = GAS_URL;
-    }, 2500);
-
-    // 3️⃣ Si Apps Script réagit rapidement → on redirige tout de suite
-    const autoJump = setInterval(() => {
-      if (gasReady) {
-        clearInterval(autoJump);
-        window.location.href = GAS_URL;
-      }
-    }, 150);
-
-    // 4️⃣ Sécurité absolue : après 8 sec on abandonne l’attente
-    setTimeout(() => {
-      window.location.href = GAS_URL;
-    }, 8000);
-  </script>
 
 </body>
 </html>
