@@ -4,66 +4,70 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Calendrier Labos</title>
+
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#031E45">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon192.png">
-  
+
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       background: linear-gradient(135deg, #031E45 0%, #0a2d5c 100%);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    
+
+    /* ---------- SPLASH SCREEN ---------- */
     .splash-container {
       text-align: center;
-      animation: fadeIn 0.5s ease-out;
+      animation: fadeIn 0.6s ease-out;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-55%);
+      width: 100%;
     }
-    
-    .logo {
-  width: 180px;       /* plus large */
-  height: auto;       /* conserver ratio */
-  margin-bottom: 30px;
-  animation: pulse 2s ease-in-out infinite;
-  filter: drop-shadow(0 4px 20px rgba(251, 223, 75, 0.3));
-}
 
-    
+    .logo {
+      width: 180px;
+      height: auto;
+      margin-bottom: 30px;
+      animation: pulse 2s ease-in-out infinite;
+      filter: drop-shadow(0 4px 20px rgba(251, 223, 75, 0.3));
+    }
+
     .app-title {
       color: #FBDF4B;
-      font-size: 1.5em;
+      font-size: 1.6em;
       font-weight: 700;
       margin-bottom: 8px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
     }
-    
+
     .app-subtitle {
       color: #CCEBFC;
       font-size: 0.9em;
-      margin-bottom: 40px;
+      margin-bottom: 35px;
       opacity: 0.9;
     }
-    
+
     .loader {
       display: flex;
       gap: 8px;
       justify-content: center;
       margin-bottom: 20px;
     }
-    
+
     .loader-dot {
       width: 12px;
       height: 12px;
@@ -71,70 +75,104 @@
       border-radius: 50%;
       animation: bounce 1.4s ease-in-out infinite;
     }
-    
+
     .loader-dot:nth-child(1) { animation-delay: 0s; }
     .loader-dot:nth-child(2) { animation-delay: 0.2s; }
     .loader-dot:nth-child(3) { animation-delay: 0.4s; }
-    
+
     .loading-text {
       color: #CCEBFC;
       font-size: 0.85em;
       opacity: 0.8;
     }
-    
+
     .college-badge {
       position: absolute;
       bottom: 30px;
+      left: 0;
+      right: 0;
+      text-align: center;
       color: rgba(255,255,255,0.5);
       font-size: 0.75em;
     }
-    
+
+    /* ---------- ANIMATIONS ---------- */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    
+
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      50%      { transform: scale(1.05); }
     }
-    
+
     @keyframes bounce {
       0%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-15px); }
+      40%           { transform: translateY(-14px); }
+    }
+
+    /* ---------- IFRAME (CALENDRIER) ---------- */
+    #calendarFrame {
+      display: none;      /* Caché tant que pas chargé */
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      position: fixed;
+      top: 0;
+      left: 0;
     }
   </style>
 </head>
 
 <body>
-  <div class="splash-container">
-    <img src="images/Champigny_Logo_horizontal_BLANC.png" 
-     alt="Logo" 
-     class="logo">
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash" class="splash-container">
+    <img src="images/Champigny_Logo_horizontal_BLANC.png" alt="Logo" class="logo">
     <h1 class="app-title">🧪 Calendrier des Laboratoires</h1>
     <p class="app-subtitle">Collège de Champigny</p>
-    
+
     <div class="loader">
       <div class="loader-dot"></div>
       <div class="loader-dot"></div>
       <div class="loader-dot"></div>
     </div>
+
     <p class="loading-text">Chargement...</p>
   </div>
-  
+
   <div class="college-badge">Année scolaire 2025-2026</div>
+
+  <!-- IFRAME : charge en arrière-plan -->
+  <iframe
+    id="calendarFrame"
+    src="https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec">
+  </iframe>
 
   <script>
     // Enregistrer le Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js');
     }
-    
-    // Rediriger après un court délai pour montrer le splash
-    setTimeout(() => {
-      window.location.href = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
-    }, 2500);
+
+    // Quand l'iframe (calendrier) est complètement chargée
+    const frame = document.getElementById("calendarFrame");
+    const splash = document.getElementById("splash");
+
+    frame.onload = () => {
+      // Petite transition douce
+      splash.style.opacity = "0";
+      splash.style.transition = "opacity 0.6s ease-out";
+
+      setTimeout(() => {
+        splash.style.display = "none";   // supprimer le splash
+        frame.style.display = "block";   // afficher le calendrier
+      }, 600);
+    };
   </script>
+
 </body>
 </html>
+
 
