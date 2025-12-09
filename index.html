@@ -18,23 +18,21 @@
       box-sizing: border-box;
     }
 
+    /* Centrage parfait sans saut */
     body {
       background: linear-gradient(135deg, #031E45 0%, #0a2d5c 100%);
-      min-height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
+      height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
     }
 
     .splash-container {
       text-align: center;
-      animation: fadeIn 0.6s ease-out;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-55%);
-      width: 100%;
+      animation: fadeIn 0.5s ease-out;
     }
 
     .logo {
@@ -47,16 +45,16 @@
 
     .app-title {
       color: #FBDF4B;
-      font-size: 1.6em;
+      font-size: 1.5em;
       font-weight: 700;
       margin-bottom: 8px;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
 
     .app-subtitle {
       color: #CCEBFC;
       font-size: 0.9em;
-      margin-bottom: 35px;
+      margin-bottom: 40px;
       opacity: 0.9;
     }
 
@@ -88,9 +86,6 @@
     .college-badge {
       position: absolute;
       bottom: 30px;
-      left: 0;
-      right: 0;
-      text-align: center;
       color: rgba(255,255,255,0.5);
       font-size: 0.75em;
     }
@@ -107,14 +102,14 @@
 
     @keyframes bounce {
       0%, 80%, 100% { transform: translateY(0); }
-      40%           { transform: translateY(-14px); }
+      40%           { transform: translateY(-15px); }
     }
   </style>
 </head>
 
 <body>
 
-  <div id="splash" class="splash-container">
+  <div class="splash-container">
     <img src="images/Champigny_Logo_horizontal_BLANC.png" alt="Logo" class="logo">
     <h1 class="app-title">🧪 Calendrier des Laboratoires</h1>
     <p class="app-subtitle">Collège de Champigny</p>
@@ -131,45 +126,43 @@
   <div class="college-badge">Année scolaire 2025-2026</div>
 
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
-
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
-
-  let gasReady = false;
-
-  // 1️⃣ Pré-réveil fiable via image invisible
-  const img = new Image();
-  img.src = GAS_URL + "?warmup=" + Date.now();
-  img.onload = () => { gasReady = true; };
-  img.onerror = () => { gasReady = true; }; // Google renverra *une erreur normale* → mais GAS sera réveillé
-
-  // 2️⃣ Timer splash (ajustable)
-  const SPLASH_TIME = 2000;
-
-  // 3️⃣ Redirection après splash OU dès que GAS est réveillé
-  setTimeout(() => {
-    window.location.href = GAS_URL;
-  }, SPLASH_TIME);
-
-  // 4️⃣ Si GAS est prêt plus vite → on part tout de suite
-  const interval = setInterval(() => {
-    if (gasReady) {
-      clearInterval(interval);
-      window.location.href = GAS_URL;
+    // Enregistrer le Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
     }
-  }, 100);
 
-  // 5️⃣ Sécurité ultime : max 8 sec
-  setTimeout(() => {
-    window.location.href = GAS_URL;
-  }, 8000);
-</script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
 
+    let gasReady = false;
+
+    // 🔥 Réveil Apps Script FIABLE via image invisible
+    const warm = new Image();
+    warm.src = GAS_URL + "?warmup=" + Date.now();
+    warm.onload = () => gasReady = true;
+    warm.onerror = () => gasReady = true; // même erreur = GAS réveillé
+
+    // Durée du splash
+    const SPLASH_TIME = 2000;
+
+    // Redirection après timer
+    setTimeout(() => {
+      window.location.href = GAS_URL;
+    }, SPLASH_TIME);
+
+    // Si GAS est prêt plus tôt → accélérer
+    const checkReady = setInterval(() => {
+      if (gasReady) {
+        clearInterval(checkReady);
+        window.location.href = GAS_URL;
+      }
+    }, 100);
+
+    // Sécurité : max 8 sec
+    setTimeout(() => {
+      window.location.href = GAS_URL;
+    }, 8000);
+  </script>
 
 </body>
 </html>
-
-
 
