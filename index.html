@@ -28,7 +28,6 @@
       align-items: center;
     }
 
-    /* ---------- SPLASH SCREEN ---------- */
     .splash-container {
       text-align: center;
       animation: fadeIn 0.6s ease-out;
@@ -96,7 +95,6 @@
       font-size: 0.75em;
     }
 
-    /* ---------- ANIMATIONS ---------- */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -111,23 +109,11 @@
       0%, 80%, 100% { transform: translateY(0); }
       40%           { transform: translateY(-14px); }
     }
-
-    /* ---------- IFRAME (CALENDRIER) ---------- */
-    #calendarFrame {
-      display: none;      /* Caché tant que pas chargé */
-      width: 100vw;
-      height: 100vh;
-      border: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-    }
   </style>
 </head>
 
 <body>
 
-  <!-- SPLASH SCREEN -->
   <div id="splash" class="splash-container">
     <img src="images/Champigny_Logo_horizontal_BLANC.png" alt="Logo" class="logo">
     <h1 class="app-title">🧪 Calendrier des Laboratoires</h1>
@@ -144,64 +130,44 @@
 
   <div class="college-badge">Année scolaire 2025-2026</div>
 
-  <!-- IFRAME : charge en arrière-plan -->
-  <iframe
-    id="calendarFrame"
-    src="https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec">
-  </iframe>
-
   <script>
-  // Enregistrer le Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
-
-  const frame = document.getElementById("calendarFrame");
-  const splash = document.getElementById("splash");
-
-  let gasReady = false;
-
-  // 1️⃣ PING SERVEUR GAS POUR LE RÉVEILLER EN ARRIÈRE-PLAN
-  // Mode no-cors parce que Apps Script ne permet pas autrement
-  fetch("https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec?warmup=1", {
-    mode: "no-cors",
-    cache: "no-store"
-  }).then(() => {
-    gasReady = true;
-  });
-
-  // 2️⃣ VÉRIFIER TOUTES LES 200 ms SI GAS EST RÉVEILLÉ
-  const checkInterval = setInterval(() => {
-    if (gasReady) {
-
-      clearInterval(checkInterval);
-
-      // Lancer l’iframe UNIQUEMENT lorsque GAS est réveillé
-      frame.src = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
-
-      // Quand l’iframe est chargée → transition propre
-      frame.onload = () => {
-        splash.style.opacity = "0";
-        splash.style.transition = "opacity 0.6s ease-out";
-
-        setTimeout(() => {
-          splash.style.display = "none";
-          frame.style.display = "block";
-        }, 600);
-      };
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
     }
-  }, 200);
 
-  // 3️⃣ SÉCURITÉ : SI GAS N’EST PAS RÉVEILLÉ APRÈS 5 SECONDES, ON CHARGE L’IFRAME QUAND MÊME
-  setTimeout(() => {
-    if (!gasReady) {
-      frame.src = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
-    }
-  }, 5000);
-</script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwthR04LV4UFoqfsOSSOzWo-bN94yv6UDT2xS-I1N8ld7de4Id_j78k0B6iXxqKBQun/exec";
 
+    let gasReady = false;
+
+    // 1️⃣ Réveiller Apps Script pendant que ton splash s’affiche
+    fetch(GAS_URL + "?wake=1", {
+      mode: "no-cors",
+      cache: "no-store"
+    }).then(() => {
+      gasReady = true;
+    });
+
+    // 2️⃣ Splash fixe (1500–2500 ms)
+    setTimeout(() => {
+      window.location.href = GAS_URL;
+    }, 2000);
+
+    // 3️⃣ Si Apps Script réagit rapidement → on redirige tout de suite
+    const autoJump = setInterval(() => {
+      if (gasReady) {
+        clearInterval(autoJump);
+        window.location.href = GAS_URL;
+      }
+    }, 150);
+
+    // 4️⃣ Sécurité absolue : après 8 sec on abandonne l’attente
+    setTimeout(() => {
+      window.location.href = GAS_URL;
+    }, 8000);
+  </script>
 
 </body>
 </html>
+
 
 
